@@ -1,0 +1,7 @@
+T:System.Console;RS0030;コンソール出力はログ基盤に収集されない可能性があるため、ILogger を使用してください。
+P:System.DateTime.Now;RS0030;現在時刻に依存する処理はテストが困難になるため、TimeProvider を使用してください。
+P:System.DateTime.UtcNow;RS0030;現在時刻に依存する処理はテストが困難になるため、TimeProvider を使用してください。
+P:System.DateTimeOffset.Now;RS0030;現在時刻に依存する処理はテストが困難になるため、TimeProvider を使用してください。
+P:System.DateTimeOffset.UtcNow;RS0030;現在時刻に依存する処理はテストが困難になるため、TimeProvider を使用してください。
+M:System.IO.File.ReadAllText(System.String);RS0030;スレッドプールの枯渇を防ぐため、I/O処理には非同期メソッドを使用してください。
+M:System.IO.File.WriteAllText(System.String,System.String);RS0030;スレッドプールの枯渇を防ぐため、I/O処理には非同期メソッドを使用してください。

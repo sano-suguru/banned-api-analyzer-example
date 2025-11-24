@@ -1,0 +1,6 @@
+@BannedApiExample_HostAddress = http://localhost:5007
+
+GET {{BannedApiExample_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
