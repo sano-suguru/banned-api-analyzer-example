@@ -76,12 +76,32 @@ EditorConfig や標準の静的解析ツール（Roslyn Analyzers）でも一般
 - **表示されるエラーメッセージ**
     > `System.IO.File.ReadAllText` is banned in this project: スレッドプールの枯渇を防ぐため、I/O処理には非同期メソッドを使用してください。
 
+## 実際の挙動 (Demo)
+
+### 1. ビルド時のエラー出力 (CI/CLI)
+ルール違反がある状態でビルドすると、以下のように具体的な修正指示を含んだエラーが発生し、ビルドが停止します。
+
+```text
+BannedApiExample/Controllers/BadPracticeController.cs(13,19): error RS0030: The symbol 'DateTime.Now' is banned in this project: RS0030;現在時刻に依存する処理はテストが困難になるため、TimeProvider を使用してください。
+BannedApiExample/Controllers/BadPracticeController.cs(21,9): error RS0030: The symbol 'Console' is banned in this project: RS0030;コンソール出力はログ基盤に収集されない可能性があるため、ILogger を使用してください。
+BannedApiExample/Controllers/BadPracticeController.cs(32,27): error RS0030: The symbol 'File.ReadAllText(string)' is banned in this project: RS0030;スレッドプールの枯渇を防ぐため、I/O処理には非同期メソッドを使用してください。
+```
+
+### 2. IDE上での表示 (開発体験)
+エディタ上でもリアルタイムに赤波線が表示され、マウスオーバーで修正方法を確認できます。
+
+**DateTime.Now の禁止例**
+![DateTime.Now Error](docs/images/vscode_error_datetime.png)
+
+**Console.WriteLine の禁止例**
+![Console Error](docs/images/vscode_error_console.png)
+
 ## 導入後のチームの変化
 
 この仕組みを導入した結果、以下の効果が得られました。
 
 - レビューコストの削減
-    - 定型的な指摘が自動化され、人間は設計やビジネスロジックの議論に集中できるようになった。
+    - 細かい規約違反の指摘を自動化できたため、レビュアーがより本質的な設計やロジックの確認に集中しやすくなった。
 - オンボーディングの効率化
     - 新規参画メンバーがコードを書く際、IDE上でリアルタイムに規約違反を知ることができるため、自然とプロジェクトのルールを学習できた。
 - 品質の均一化
@@ -89,4 +109,16 @@ EditorConfig や標準の静的解析ツール（Roslyn Analyzers）でも一般
 
 ## プロジェクト構成
 
-（今後サンプルコードを追加予定）
+主要なファイルへのリンクと解説です。
+
+- **[BannedSymbols.txt](BannedApiExample/BannedSymbols.txt)**
+  - ⚠️ **最重要**: 禁止APIとエラーメッセージの定義ファイル
+- **[BannedApiExample.csproj](BannedApiExample/BannedApiExample.csproj)**
+  - Analyzerパッケージの参照と `TreatWarningsAsErrors` (警告をエラーとして扱い、ビルドを停止させる) の設定
+- **Controllers/**
+  - **[BadPracticeController.cs](BannedApiExample/Controllers/BadPracticeController.cs)**
+    - [NG] 禁止APIを使用したコード例（ビルドエラーになります）
+  - **[GoodPracticeController.cs](BannedApiExample/Controllers/GoodPracticeController.cs)**
+    - [OK] 推奨APIを使用した修正コード例
+- **[Program.cs](BannedApiExample/Program.cs)**
+  - `TimeProvider` などのDI設定
